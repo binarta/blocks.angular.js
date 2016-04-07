@@ -4,7 +4,7 @@
       "blocks.remove.item.button": "verwijderen",
       "blocks.add.item.button": "nieuw item"
     }, "en":{
-      "blocks.remove.partition.button": "delete",
+      "blocks.remove.item.button": "delete",
       "blocks.add.item.button": "add item"
     }, "fr":{
       "blocks.remove.item.button": "effacer",
