@@ -1,0 +1,20 @@
+<div ng-switch="ctrl.edit">
+    <div ng-switch-when="true" class="bin-block" ng-class="ctrl.block.cssClass">
+
+        <div class="bin-dropdown bin-block-actions" ng-class="{'open': ctrl.opened}">
+            <button type="button" class="bin-btn bin-btn-down bin-btn-primary" ng-class="{'active': ctrl.opened}" ng-click="ctrl.opened = !ctrl.opened"></button>
+            <ul>
+                <li>
+                    <button type="button" class="bin-link bin-link-danger" ng-click="ctrl.removeBlock()">
+                        <i class="fa fa-trash-o"></i> <span i18n code="blocks.remove.item.button" read-only ng-bind="::var"></span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="bin-block-template" ng-include="ctrl.templateUrl"></div>
+    </div>
+    <div ng-switch-default>
+        <div ng-include="ctrl.templateUrl"></div>
+    </div>
+</div>
