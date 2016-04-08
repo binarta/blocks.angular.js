@@ -2,10 +2,18 @@
     <div ng-switch-when="true" class="bin-blocks">
 
         <div class="bin-blocks-actions">
-            <button type="button" class="bin-btn bin-btn-floated bin-btn-primary" ng-click="ctrl.addBlock()"
-                    ng-disabled="ctrl.blocks.length == ctrl.count"
-                    i18n code="blocks.add.item.button" read-only ng-bind="::var">
-            </button>
+            <div class="row">
+                <div class="col-xs-12">
+                    <button type="button" class="bin-btn bin-btn-floated bin-btn-primary" ng-click="ctrl.addBlock()"
+                            i18n code="blocks.add.item.button" read-only ng-bind="::var">
+                    </button>
+                </div>
+            </div>
+            <div class="row" ng-if="ctrl.violation">
+                <div class="col-xs-12">
+                    <div class="alert alert-warning" i18n code="blocks.violation.{{ctrl.violation}}" read-only ng-bind="::var"></div>
+                </div>
+            </div>
         </div>
 
         <div ng-include="ctrl.templateUrl"></div>

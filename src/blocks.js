@@ -1,7 +1,6 @@
 (function () {
     angular.module('bin.blocks', ['config', 'binarta.search', 'notifications', 'rest.client', 'bin.blocks.templates'])
         .controller('binBlocksController', ['$scope', '$timeout', 'config', 'binartaSearch', 'ngRegisterTopicHandler', 'restServiceHandler', BinBlocksController])
-        .controller('binBlockController', ['$scope', '$timeout', 'config', 'restServiceHandler', BinBlockController])
         .directive('binBlocks', ['$templateCache', BinBlocksDirective])
         .directive('binBlock', ['$templateCache', BinBlockDirective]);
 
@@ -20,13 +19,11 @@
             entity: 'catalog-item',
             action: 'findByPartition',
             locale: 'default',
-            subset: {
-                count: self.count,
-                offset: 0
-            },
             filters: {
                 type: 'uiBlocks',
                 partition: partition,
+                count: parseInt(self.count),
+                offset: 0,
                 sortBy: 'priority',
                 sortOrder: 'desc'
             },
@@ -36,51 +33,56 @@
         });
 
         this.addBlock = function () {
-            rest({
-                scope: $scope,
-                params: {
-                    method: 'PUT',
-                    url: (config.baseUri || '') + 'api/entity/catalog-item',
-                    data: {
-                        namespace: config.namespace,
-                        locale: 'default',
-                        type: 'uiBlocks',
-                        partition: partition
-                    },
-                    withCredentials: true
-                }
-            }).then(function (result) {
-                addBlockToList(self.blocks, result.data, $timeout);
-            });
+            resetViolation();
+            if (self.blocks.length < self.count) {
+                rest({
+                    scope: $scope,
+                    params: {
+                        method: 'PUT',
+                        url: (config.baseUri || '') + 'api/entity/catalog-item',
+                        data: {
+                            namespace: config.namespace,
+                            locale: 'default',
+                            type: 'uiBlocks',
+                            partition: partition
+                        },
+                        withCredentials: true
+                    }
+                }).then(function (result) {
+                    addBlockToList(self.blocks, result.data, $timeout);
+                });
+            } else {
+                self.violation = 'upperbound';
+            }
         };
-    }
 
-    function BinBlockController($scope, $timeout, config, rest) {
-        var self = this;
-        this.templateUrl = 'partials/blocks' + this.block.partition + 'block.html';
-
-        this.removeBlock = function () {
-            self.block.cssClass = 'removed';
+        this.removeBlock = function (block) {
+            resetViolation();
+            block.cssClass = 'removed';
 
             $timeout(function () {
-                self.blocks.splice(self.blocks.indexOf(self.block), 1);
+                self.blocks.splice(self.blocks.indexOf(block), 1);
             }, delay);
 
             rest({
                 scope: $scope,
                 params: {
                     method: 'DELETE',
-                    url: (config.baseUri || '') + 'api/entity/catalog-item?id=' + encodeURIComponent(self.block.id ),
+                    url: (config.baseUri || '') + 'api/entity/catalog-item?id=' + encodeURIComponent(block.id ),
                     withCredentials: true
                 }
             }).then(function () {
             }, function () {
                 $timeout(function () {
-                    delete self.block.cssClass;
-                    addBlockToList(self.blocks, self.block, $timeout);
+                    delete block.cssClass;
+                    addBlockToList(self.blocks, block, $timeout);
                 }, delay);
             });
         };
+
+        function resetViolation() {
+            self.violation = undefined;
+        }
     }
 
     function addBlockToList(blocks, block, timeout) {
@@ -112,13 +114,15 @@
             scope: {
                 block: '='
             },
-            controller: 'binBlockController',
+            controller: function () {
+                this.templateUrl = 'partials/blocks' + this.block.partition + 'block.html';
+            },
             controllerAs: 'ctrl',
             bindToController: true,
             template: $templateCache.get('bin-block.html'),
             link: function(scope, element, attrs, blocksCtrl) {
                 scope.ctrl.edit = blocksCtrl.edit;
-                scope.ctrl.blocks = blocksCtrl.blocks;
+                scope.ctrl.removeBlock = blocksCtrl.removeBlock;
             }
         }
     }

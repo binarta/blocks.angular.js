@@ -27,13 +27,11 @@ describe('bin.blocks', function () {
                 entity: 'catalog-item',
                 action: 'findByPartition',
                 locale: 'default',
-                subset: {
-                    count: '10',
-                    offset: 0
-                },
                 filters: {
                     type: 'uiBlocks',
                     partition: '/partition/',
+                    count: 10,
+                    offset: 0,
                     sortBy: 'priority',
                     sortOrder: 'desc'
                 },
@@ -118,38 +116,40 @@ describe('bin.blocks', function () {
                 });
             });
         });
-    });
 
-    describe('bin-block controller', function () {
-        var $rootScope, $timeout, ctrl, config, restClient;
-        var block = {
-            id: 'blockId',
-            partition: '/partition/'
-        };
+        describe('when maximum amount is reached', function () {
+            beforeEach(function () {
+                ctrl.blocks = ['1','2','3','4','5','6','7','8','9','10'];
+            });
 
-        beforeEach(inject(function (_$rootScope_, $controller, _$timeout_, _config_, restServiceHandler) {
-            $rootScope = _$rootScope_;
-            $timeout = _$timeout_;
-            config = _config_;
-            restClient = restServiceHandler;
+            describe('on add new block', function () {
+                beforeEach(inject(function ($q) {
+                    ctrl.addBlock();
+                }));
 
-            config.baseUri = 'base/';
-            ctrl = $controller('binBlockController', {$scope: {}}, {block: block});
-            ctrl.blocks = [block];
-        }));
+                it('do not perform rest call', function () {
+                    expect(restClient).not.toHaveBeenCalled();
+                });
 
-        it('templateUrl is on ctrl', function () {
-            expect(ctrl.templateUrl).toEqual('partials/blocks/partition/block.html');
+                it('violation is set', function () {
+                    expect(ctrl.violation).toEqual('upperbound');
+                });
+            });
         });
 
-        describe('on remove', function () {
+        describe('on remove block', function () {
             var deferred;
+            var block = {
+                id: 'blockId',
+                partition: '/partition/'
+            };
 
             beforeEach(inject(function ($q) {
                 deferred = $q.defer();
                 restClient.andReturn(deferred.promise);
+                ctrl.blocks = [block];
 
-                ctrl.removeBlock();
+                ctrl.removeBlock(block);
             }));
 
             it('perform rest call', function () {

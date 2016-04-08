@@ -5,7 +5,7 @@
             <button type="button" class="bin-btn bin-btn-down bin-btn-primary" ng-class="{'active': ctrl.opened}" ng-click="ctrl.opened = !ctrl.opened"></button>
             <ul>
                 <li>
-                    <button type="button" class="bin-link bin-link-danger" ng-click="ctrl.removeBlock()">
+                    <button type="button" class="bin-link bin-link-danger" ng-click="ctrl.removeBlock(ctrl.block)">
                         <i class="fa fa-trash-o"></i> <span i18n code="blocks.remove.item.button" read-only ng-bind="::var"></span>
                     </button>
                 </li>
