@@ -9,7 +9,8 @@
 
     function BinBlocksController($scope, $timeout, config, search, topics, rest) {
         var self = this;
-        this.templateUrl = 'partials/blocks/' + this.partition + '-blocks.html';
+        this.templateUrl = 'partials/blocks/' + this.partition + '/blocks.html';
+        var partition = '/' + this.partition + '/';
 
         topics($scope, 'edit.mode', function (editModeActive) {
             self.edit = editModeActive;
@@ -25,12 +26,10 @@
             },
             filters: {
                 type: 'uiBlocks',
-                partition: self.partition
+                partition: partition,
+                sortBy: 'priority',
+                sortOrder: 'desc'
             },
-            sortings: [{
-                on: 'priority',
-                orientation: 'asc'
-            }],
             success: function (results) {
                 self.blocks = results;
             }
@@ -46,7 +45,7 @@
                         namespace: config.namespace,
                         locale: 'default',
                         type: 'uiBlocks',
-                        partition: self.partition
+                        partition: partition
                     },
                     withCredentials: true
                 }
@@ -58,7 +57,7 @@
 
     function BinBlockController($scope, $timeout, config, rest) {
         var self = this;
-        this.templateUrl = 'partials/blocks/' + this.block.partition + '-block.html';
+        this.templateUrl = 'partials/blocks' + this.block.partition + 'block.html';
 
         this.removeBlock = function () {
             self.block.cssClass = 'removed';

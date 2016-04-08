@@ -19,7 +19,7 @@ describe('bin.blocks', function () {
         }));
 
         it('templateUrl is on ctrl', function () {
-            expect(ctrl.templateUrl).toEqual('partials/blocks/partition-blocks.html');
+            expect(ctrl.templateUrl).toEqual('partials/blocks/partition/blocks.html');
         });
 
         it('search is triggered', function () {
@@ -33,12 +33,10 @@ describe('bin.blocks', function () {
                 },
                 filters: {
                     type: 'uiBlocks',
-                    partition: 'partition'
+                    partition: '/partition/',
+                    sortBy: 'priority',
+                    sortOrder: 'desc'
                 },
-                sortings: [{
-                    on: 'priority',
-                    orientation: 'asc'
-                }],
                 success: jasmine.any(Function)
             });
         });
@@ -92,7 +90,7 @@ describe('bin.blocks', function () {
                             namespace: 'namespace',
                             locale: 'default',
                             type: 'uiBlocks',
-                            partition: 'partition'
+                            partition: '/partition/'
                         },
                         withCredentials: true
                     }
@@ -126,7 +124,7 @@ describe('bin.blocks', function () {
         var $rootScope, $timeout, ctrl, config, restClient;
         var block = {
             id: 'blockId',
-            partition: 'partition'
+            partition: '/partition/'
         };
 
         beforeEach(inject(function (_$rootScope_, $controller, _$timeout_, _config_, restServiceHandler) {
@@ -141,7 +139,7 @@ describe('bin.blocks', function () {
         }));
 
         it('templateUrl is on ctrl', function () {
-            expect(ctrl.templateUrl).toEqual('partials/blocks/partition-block.html');
+            expect(ctrl.templateUrl).toEqual('partials/blocks/partition/block.html');
         });
 
         describe('on remove', function () {
@@ -188,7 +186,7 @@ describe('bin.blocks', function () {
                     it('re-add removed block to UI', function () {
                         expect(ctrl.blocks).toEqual([{
                             id: 'blockId',
-                            partition: 'partition',
+                            partition: '/partition/',
                             cssClass: 'added'
                         }]);
                     });
