@@ -2,20 +2,16 @@
   "msgs":{
     "nl":{
       "blocks.remove.item.button": "verwijderen",
-      "blocks.add.item.button": "nieuw item",
-      "blocks.violation.upperbound": "Het maximum aantal is bereikt."
+      "blocks.add.item.button": "nieuw item"
     }, "en":{
       "blocks.remove.item.button": "delete",
-      "blocks.add.item.button": "add item",
-      "blocks.violation.upperbound": "The maximum amount of items has been reached."
+      "blocks.add.item.button": "add item"
     }, "fr":{
       "blocks.remove.item.button": "effacer",
-      "blocks.add.item.button": "add item",
-      "blocks.violation.upperbound": "The maximum amount of items has been reached."
+      "blocks.add.item.button": "add item"
     }, "de":{
       "blocks.remove.item.button": "delete",
-      "blocks.add.item.button": "add item",
-      "blocks.violation.upperbound": "The maximum amount of items has been reached."
+      "blocks.add.item.button": "add item"
     }
   }
 }

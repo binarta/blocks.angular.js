@@ -4,7 +4,10 @@
         <div class="bin-blocks-actions">
             <div class="row">
                 <div class="col-xs-12">
-                    <button type="button" class="bin-btn bin-btn-floated bin-btn-primary" ng-click="ctrl.addBlock()"
+                    <button type="button" class="bin-btn bin-btn-floated bin-btn-primary"
+                            ng-controller="AddToCatalogController"
+                            ng-init="init({partition:ctrl.partition, type:'uiBlocks', locale:'default', success: ctrl.blockAdded})"
+                            ng-click="ctrl.addBlock({item: item, submit: submit})"
                             i18n code="blocks.add.item.button" read-only ng-bind="::var">
                     </button>
                 </div>

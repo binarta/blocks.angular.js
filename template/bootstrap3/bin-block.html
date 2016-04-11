@@ -5,8 +5,14 @@
             <button type="button" class="bin-btn bin-btn-down bin-btn-primary" ng-class="{'active': ctrl.opened}" ng-click="ctrl.opened = !ctrl.opened"></button>
             <ul>
                 <li>
-                    <button type="button" class="bin-link bin-link-danger" ng-click="ctrl.removeBlock(ctrl.block)">
-                        <i class="fa fa-trash-o"></i> <span i18n code="blocks.remove.item.button" read-only ng-bind="::var"></span>
+                    <button type="button" class="bin-link bin-link-danger"
+                            ng-controller="RemoveItemFromCatalogController"
+                            ng-init="init({noredirect: true, successNotification: false, success: ctrl.blockRemoved})"
+                            ng-click="submit(ctrl.block.id)"
+                            ng-disabled="working">
+                        <span ng-hide="working"><i class="fa fa-trash-o"></i></span>
+                        <span ng-show="working"><i class="fa fa-spinner fa-spin"></i></span>
+                        <span i18n code="blocks.remove.item.button" read-only ng-bind="::var"></span>
                     </button>
                 </li>
             </ul>

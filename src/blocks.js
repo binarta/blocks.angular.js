@@ -1,109 +1,66 @@
 (function () {
-    angular.module('bin.blocks', ['config', 'binarta.search', 'notifications', 'rest.client', 'bin.blocks.templates'])
-        .controller('binBlocksController', ['$scope', '$timeout', 'config', 'binartaSearch', 'ngRegisterTopicHandler', 'restServiceHandler', BinBlocksController])
-        .directive('binBlocks', ['$templateCache', BinBlocksDirective])
+    angular.module('bin.blocks', ['binarta.search', 'notifications', 'bin.blocks.templates'])
+        .directive('binBlocks', ['$templateCache', '$timeout', 'ngRegisterTopicHandler', BinBlocksDirective])
         .directive('binBlock', ['$templateCache', BinBlockDirective]);
 
-    var delay = 300;
-
-    function BinBlocksController($scope, $timeout, config, search, topics, rest) {
-        var self = this;
-        this.templateUrl = 'partials/blocks/' + this.partition + '/blocks.html';
-        var partition = '/' + this.partition + '/';
-
-        topics($scope, 'edit.mode', function (editModeActive) {
-            self.edit = editModeActive;
-        });
-
-        search({
-            entity: 'catalog-item',
-            action: 'findByPartition',
-            locale: 'default',
-            filters: {
-                type: 'uiBlocks',
-                partition: partition,
-                count: parseInt(self.count),
-                offset: 0,
-                sortBy: 'priority',
-                sortOrder: 'desc'
-            },
-            success: function (results) {
-                self.blocks = results;
-            }
-        });
-
-        this.addBlock = function () {
-            resetViolation();
-            if (self.blocks.length < self.count) {
-                rest({
-                    scope: $scope,
-                    params: {
-                        method: 'PUT',
-                        url: (config.baseUri || '') + 'api/entity/catalog-item',
-                        data: {
-                            namespace: config.namespace,
-                            locale: 'default',
-                            type: 'uiBlocks',
-                            partition: partition
-                        },
-                        withCredentials: true
-                    }
-                }).then(function (result) {
-                    addBlockToList(self.blocks, result.data, $timeout);
-                });
-            } else {
-                self.violation = 'upperbound';
-            }
-        };
-
-        this.removeBlock = function (block) {
-            resetViolation();
-            block.cssClass = 'removed';
-
-            $timeout(function () {
-                self.blocks.splice(self.blocks.indexOf(block), 1);
-            }, delay);
-
-            rest({
-                scope: $scope,
-                params: {
-                    method: 'DELETE',
-                    url: (config.baseUri || '') + 'api/entity/catalog-item?id=' + encodeURIComponent(block.id ),
-                    withCredentials: true
-                }
-            }).then(function () {
-            }, function () {
-                $timeout(function () {
-                    delete block.cssClass;
-                    addBlockToList(self.blocks, block, $timeout);
-                }, delay);
-            });
-        };
-
-        function resetViolation() {
-            self.violation = undefined;
-        }
-    }
-
-    function addBlockToList(blocks, block, timeout) {
-        block.cssClass = 'added';
-        timeout(function () {
-            delete block.cssClass;
-        }, delay);
-        blocks.unshift(block);
-    }
-
-    function BinBlocksDirective($templateCache) {
+    function BinBlocksDirective($templateCache, $timeout, topics) {
         return {
             restrict: 'E',
             scope: {
                 partition: '@',
                 count: '@'
             },
-            controller: 'binBlocksController',
+            controller: 'BinartaSearchController',
             controllerAs: 'ctrl',
             bindToController: true,
-            template: $templateCache.get('bin-blocks.html')
+            template: $templateCache.get('bin-blocks.html'),
+            link: function (scope) {
+                var delay = 300;
+                var ctrl = scope.ctrl;
+
+                ctrl.init({
+                    entity:'catalog-item',
+                    context:'search',
+                    locale: 'default',
+                    filters:{
+                        type: 'uiBlocks',
+                        partition: ctrl.partition
+                    },
+                    sortings: [
+                        {on:'priority', orientation:'desc'}
+                    ],
+                    subset:{count:parseInt(ctrl.count)},
+                    autosearch:true,
+                    noMoreResultsNotification: false
+                });
+
+                ctrl.templateUrl = 'partials/blocks' + ctrl.partition + 'blocks.html';
+
+                topics(scope, 'edit.mode', function (editModeActive) {
+                    ctrl.edit = editModeActive;
+                });
+
+                ctrl.blockRemoved = function (block) {
+                    block.cssClass = 'removed';
+                    $timeout(function () {
+                        ctrl.results.splice(ctrl.results.indexOf(block), 1);
+                    }, delay);
+                };
+
+                ctrl.addBlock = function (args) {
+                    args.item.defaultName = 'block';
+                    args.submit();
+                };
+
+                ctrl.blockAdded = function (block) {
+                    block.cssClass = 'added';
+                    ctrl.subset.offset++;
+                    $timeout(function () {
+                        delete block.cssClass;
+                    }, delay);
+                    ctrl.results.unshift(block);
+                };
+            }
         }
     }
 
@@ -121,8 +78,13 @@
             bindToController: true,
             template: $templateCache.get('bin-block.html'),
             link: function(scope, element, attrs, blocksCtrl) {
-                scope.ctrl.edit = blocksCtrl.edit;
-                scope.ctrl.removeBlock = blocksCtrl.removeBlock;
+                var ctrl = scope.ctrl;
+
+                ctrl.edit = blocksCtrl.edit;
+
+                ctrl.blockRemoved = function () {
+                    blocksCtrl.blockRemoved(ctrl.block);
+                }
             }
         }
     }
