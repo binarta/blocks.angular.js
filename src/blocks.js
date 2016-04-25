@@ -17,6 +17,7 @@
             link: function (scope) {
                 var delay = 300;
                 var ctrl = scope.ctrl;
+                var count = parseInt(ctrl.count || 100);
 
                 ctrl.init({
                     entity:'catalog-item',
@@ -29,7 +30,7 @@
                     sortings: [
                         {on:'priority', orientation:'desc'}
                     ],
-                    subset:{count:parseInt(ctrl.count)},
+                    subset:{count: count},
                     autosearch:true,
                     noMoreResultsNotification: false
                 });
