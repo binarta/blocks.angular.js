@@ -4,10 +4,11 @@
     "./src/blocks.js",
     "./src/blocks-tpls-bootstrap3.js",
     "./less/blocks.less",
-    "./metadata-system.json"
+    "./metadata-system.json",
+    "./sources.json"
   ],
   "dependencies": {
-    "angular": "1.3.*",
+    "binarta.angularx": "0.*.*",
     "binarta.search.angular": "0.*.*",
     "binarta.notifications.angular": "1.*.*"
   },
@@ -17,8 +18,5 @@
     "bower_components",
     "test",
     "tests"
-  ],
-  "resolutions": {
-    "angular": "1.3.*"
-  }
+  ]
 }

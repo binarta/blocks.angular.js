@@ -1,0 +1,6 @@
+{
+  "default": {
+    "bin.blocks": "bower_components/binarta.blocks.angular/src/blocks.js",
+    "bin.blocks.templates": "bower_components/binarta.blocks.angular/src/blocks-tpls-bootstrap3.js"
+  }
+}
