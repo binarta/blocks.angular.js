@@ -1,7 +1,4 @@
 .bin-blocks {
-  @transition-speed: 300ms;
-  @transition-options: ease-in @transition-speed;
-
   .bin-blocks-actions {
     text-align: center;
     margin-bottom: 30px;
@@ -12,8 +9,6 @@
   }
 
   .bin-block {
-    position: relative;
-
     &.added {
       animation: blockAdded 300ms;
     }
@@ -22,56 +17,6 @@
       animation: blockRemoved 300ms;
       transform: scale(0.5,0.5);
       opacity: 0;
-    }
-
-    .bin-block-actions {
-      position: absolute;
-      top: 0;
-      right: 0;
-      overflow: hidden;
-      text-align: right;
-
-      &.bin-dropdown {
-        z-index: 1;
-
-        ul {
-          display: block;
-          opacity: 0;
-          top: 58px;
-          left: 0;
-          right: 0;
-          text-align: center;
-          transition: opacity @transition-options;
-
-          li {
-            padding: 18px;
-          }
-        }
-
-        & > button {
-          margin: 5px;
-          z-index: 2;
-        }
-
-        &.open {
-          width: 100%;
-          overflow: inherit;
-          z-index: 2;
-
-          ul {
-            opacity: 1;
-          }
-        }
-      }
-
-      &.open + .bin-block-template {
-        opacity: 0.2;
-        transform: scale(0.9,0.9);
-      }
-    }
-
-    .bin-block-template {
-      transition: transform @transition-options, opacity @transition-options;
     }
   }
 

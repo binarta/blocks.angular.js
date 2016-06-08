@@ -1,5 +1,5 @@
 (function () {
-    angular.module('bin.blocks', ['binarta.search', 'notifications', 'bin.blocks.templates'])
+    angular.module('bin.blocks', ['binarta.search', 'notifications', 'bin.blocks.templates', 'bin.edit'])
         .directive('binBlocks', ['$templateCache', '$timeout', 'ngRegisterTopicHandler', BinBlocksDirective])
         .directive('binBlock', ['$templateCache', BinBlockDirective]);
 

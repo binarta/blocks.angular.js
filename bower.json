@@ -10,7 +10,8 @@
   "dependencies": {
     "binarta.angularx": "0.*.*",
     "binarta.search.angular": "0.*.*",
-    "binarta.notifications.angular": "1.*.*"
+    "binarta.notifications.angular": "1.*.*",
+    "binarta.edit.angular": "0.*.*"
   },
   "ignore": [
     "**/.*",
