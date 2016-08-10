@@ -22,7 +22,6 @@
                 ctrl.init({
                     entity:'catalog-item',
                     context:'search',
-                    locale: 'default',
                     filters:{
                         type: 'uiBlocks',
                         partition: ctrl.partition
