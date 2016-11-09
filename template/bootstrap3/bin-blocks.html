@@ -1,24 +1,17 @@
-<div ng-switch="ctrl.edit">
+<div ng-switch="ctrl.edit && ctrl.active">
     <div ng-switch-when="true" class="bin-blocks">
-
-        <div class="bin-blocks-actions">
+        <div class="bin-blocks-actions" ng-controller="AddToCatalogController">
             <div class="row">
                 <div class="col-xs-12">
                     <button type="button" class="bin-btn bin-btn-floated bin-btn-primary"
-                            ng-controller="AddToCatalogController"
-                            ng-init="init({partition:ctrl.partition, type:'uiBlocks', locale:'default', success: ctrl.blockAdded})"
+                            ng-init="init({partition:ctrl.partition, type: ctrl.type, locale:'default', success: ctrl.blockAdded})"
                             ng-click="ctrl.addBlock({item: item, submit: submit})"
                             i18n code="blocks.add.item.button" read-only ng-bind="::var">
                     </button>
                 </div>
             </div>
-            <div class="row" ng-if="ctrl.violation">
-                <div class="col-xs-12">
-                    <div class="alert alert-warning" i18n code="blocks.violation.{{ctrl.violation}}" read-only ng-bind="::var"></div>
-                </div>
-            </div>
+            <bin-violations src="violations['partition']" fade-after="7000" code-prefix="blocks.add.item"></bin-violations>
         </div>
-
         <div ng-include="ctrl.templateUrl"></div>
     </div>
     <div ng-switch-default>

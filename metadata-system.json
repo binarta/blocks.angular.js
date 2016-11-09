@@ -1,17 +1,24 @@
 {
-  "msgs":{
-    "nl":{
+  "msgs": {
+    "nl": {
       "blocks.remove.item.button": "verwijderen",
-      "blocks.add.item.button": "nieuw item"
-    }, "en":{
+      "blocks.add.item.button": "nieuw item",
+      "blocks.add.item.upperbound": "Het maximale aantal items is bereikt"
+    },
+    "en": {
       "blocks.remove.item.button": "delete",
-      "blocks.add.item.button": "add item"
-    }, "fr":{
+      "blocks.add.item.button": "add item",
+      "blocks.add.item.upperbound": "The maximum number of items has been reached"
+    },
+    "fr": {
       "blocks.remove.item.button": "effacer",
-      "blocks.add.item.button": "add item"
-    }, "de":{
+      "blocks.add.item.button": "add item",
+      "blocks.add.item.upperbound": "The maximum number of items has been reached"
+    },
+    "de": {
       "blocks.remove.item.button": "delete",
-      "blocks.add.item.button": "add item"
+      "blocks.add.item.button": "add item",
+      "blocks.add.item.upperbound": "The maximum number of items has been reached"
     }
   }
 }

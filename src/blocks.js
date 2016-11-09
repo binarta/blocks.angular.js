@@ -8,7 +8,9 @@
             restrict: 'E',
             scope: {
                 partition: '@',
-                count: '@'
+                type: '@',
+                count: '@',
+                readOnly: '@'
             },
             controller: 'BinartaSearchController',
             controllerAs: 'ctrl',
@@ -20,21 +22,24 @@
                 var count = parseInt(ctrl.count || 100);
 
                 ctrl.init({
-                    entity:'catalog-item',
-                    context:'search',
-                    filters:{
-                        type: 'uiBlocks',
+                    entity: 'catalog-item',
+                    context: 'search',
+                    filters: {
+                        type: ctrl.type,
                         partition: ctrl.partition
                     },
                     sortings: [
-                        {on:'priority', orientation:'desc'}
+                        {on: 'priority', orientation: 'desc'}
                     ],
-                    subset:{count: count},
-                    autosearch:true,
+                    subset: {count: count},
+                    autosearch: true,
                     noMoreResultsNotification: false
                 });
 
                 ctrl.templateUrl = 'partials/blocks' + ctrl.partition + 'blocks.html';
+
+                if (ctrl.readOnly != undefined) ctrl.active = false;
+                else ctrl.active = true;
 
                 topics(scope, 'edit.mode', function (editModeActive) {
                     ctrl.edit = editModeActive;
@@ -77,10 +82,12 @@
             controllerAs: 'ctrl',
             bindToController: true,
             template: $templateCache.get('bin-block.html'),
-            link: function(scope, element, attrs, blocksCtrl) {
+            link: function (scope, element, attrs, blocksCtrl) {
                 var ctrl = scope.ctrl;
 
                 ctrl.edit = blocksCtrl.edit;
+
+                ctrl.active = blocksCtrl.active;
 
                 ctrl.blockRemoved = function () {
                     blocksCtrl.blockRemoved(ctrl.block);
