@@ -38,8 +38,7 @@
 
                 ctrl.templateUrl = 'partials/blocks' + ctrl.partition + 'blocks.html';
 
-                if (ctrl.readOnly != undefined) ctrl.active = false;
-                else ctrl.active = true;
+                ctrl.active = ctrl.readOnly == undefined;
 
                 topics(scope, 'edit.mode', function (editModeActive) {
                     ctrl.edit = editModeActive;
@@ -74,10 +73,10 @@
             restrict: 'E',
             require: '^^binBlocks',
             scope: {
-                block: '='
+                src: '='
             },
             controller: function () {
-                this.templateUrl = 'partials/blocks' + this.block.partition + 'block.html';
+                this.templateUrl = 'partials/blocks' + this.src.partition + 'block.html';
             },
             controllerAs: 'ctrl',
             bindToController: true,
@@ -90,7 +89,7 @@
                 ctrl.active = blocksCtrl.active;
 
                 ctrl.blockRemoved = function () {
-                    blocksCtrl.blockRemoved(ctrl.block);
+                    blocksCtrl.blockRemoved(ctrl.src);
                 }
             }
         }

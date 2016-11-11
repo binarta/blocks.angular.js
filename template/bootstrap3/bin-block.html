@@ -1,12 +1,12 @@
 <div ng-switch="ctrl.edit && ctrl.active">
-    <div ng-switch-when="true" class="bin-block" ng-class="ctrl.block.cssClass">
+    <div ng-switch-when="true" class="bin-block" ng-class="ctrl.src.cssClass">
         <bin-edit>
             <bin-edit-actions>
                 <li>
                     <button type="button" class="bin-link bin-link-danger"
                             ng-controller="RemoveItemFromCatalogController"
                             ng-init="init({noredirect: true, successNotification: false, success: ctrl.blockRemoved})"
-                            ng-click="submit(ctrl.block.id)"
+                            ng-click="submit(ctrl.src.id)"
                             ng-disabled="working">
                         <span ng-hide="working"><i class="fa fa-trash-o"></i></span>
                         <span ng-show="working"><i class="fa fa-spinner fa-spin"></i></span>
