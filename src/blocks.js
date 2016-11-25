@@ -17,7 +17,7 @@
             link: function (scope) {
                 var delay = 300;
                 var ctrl = scope.ctrl;
-                var count = parseInt(ctrl.count || 100);
+                var count = parseInt(ctrl.count || 99);
 
                 ctrl.init({
                     entity:'catalog-item',
