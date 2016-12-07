@@ -73,19 +73,19 @@
             restrict: 'E',
             require: '^^binBlocks',
             scope: {
-                src: '='
+                block: '=?',
+                src: '=?'
             },
             controller: function () {
-                this.templateUrl = 'partials/blocks' + this.src.partition + 'block.html';
+                this.src = this.src || this.block;
+                this.templateUrl = 'partials/blocks' +  this.src.partition + 'block.html';
             },
             controllerAs: 'ctrl',
             bindToController: true,
             template: $templateCache.get('bin-block.html'),
             link: function (scope, element, attrs, blocksCtrl) {
                 var ctrl = scope.ctrl;
-
                 ctrl.edit = blocksCtrl.edit;
-
                 ctrl.active = blocksCtrl.active;
 
                 ctrl.blockRemoved = function () {
