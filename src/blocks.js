@@ -25,7 +25,7 @@
                     entity: 'catalog-item',
                     context: 'search',
                     filters: {
-                        type: ctrl.type,
+                        type: ctrl.type || 'uiBlocks',
                         partition: ctrl.partition
                     },
                     sortings: [
