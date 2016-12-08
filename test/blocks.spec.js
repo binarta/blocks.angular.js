@@ -334,7 +334,7 @@ describe('bin.blocks module', function () {
         var ctrl, src, partition, blocksCtrl, blockRemovedSpy, editingSpy;
 
         beforeEach(function () {
-            src = {id: 1, type: 'type', link: 'link'};
+            src = {id: 1, type: 'type', link: 'link', linkTarget: '_blank'};
             partition = '/partition/';
             blockRemovedSpy = jasmine.createSpy('spy');
             editingSpy = jasmine.createSpy('spy').and.returnValue(true);
@@ -430,6 +430,7 @@ describe('bin.blocks module', function () {
 
                         it('previous link is available', function () {
                             expect(scope.link).toEqual(src.link);
+                            expect(scope.target).toEqual(true);
                         });
 
                         describe('on submit', function () {
@@ -448,7 +449,8 @@ describe('bin.blocks module', function () {
                                         context: 'update',
                                         id: src.id,
                                         type: src.type,
-                                        link: scope.link
+                                        link: scope.link,
+                                        linkTarget: '_blank'
                                     },
                                     success: jasmine.any(Function),
                                     error: jasmine.any(Function)
@@ -466,6 +468,7 @@ describe('bin.blocks module', function () {
 
                                 it('src is updated with link', function () {
                                     expect(src.link).toEqual(scope.link);
+                                    expect(src.linkTarget).toEqual('_blank');
                                 });
                             });
 
@@ -480,6 +483,38 @@ describe('bin.blocks module', function () {
 
                                 it('show violation', function () {
                                     expect(scope.violation).toEqual(true)
+                                });
+                            });
+
+                            describe('and link should not open in a new tab', function () {
+                                beforeEach(function () {
+                                    scope.target = false;
+                                    scope.submit();
+                                });
+
+                                it('item is updated', function () {
+                                    expect(updateCatalogItem).toHaveBeenCalledWith({
+                                        data: {
+                                            context: 'update',
+                                            id: src.id,
+                                            type: src.type,
+                                            link: scope.link,
+                                            linkTarget: ''
+                                        },
+                                        success: jasmine.any(Function),
+                                        error: jasmine.any(Function)
+                                    });
+                                });
+
+                                describe('on update success', function () {
+                                    beforeEach(function () {
+                                        updateCatalogItem.calls.mostRecent().args[0].success();
+                                    });
+
+                                    it('src is updated with link', function () {
+                                        expect(src.link).toEqual(scope.link);
+                                        expect(src.linkTarget).toEqual('');
+                                    });
                                 });
                             });
                         });

@@ -152,17 +152,21 @@
                     if (ctrl.isLinkable()) {
                         var scope = $scope.$new();
                         scope.link = ctrl.src.link;
+                        scope.target = ctrl.src.linkTarget == '_blank';
                         scope.cancel = editModeRenderer.close;
 
                         scope.submit = function () {
                             scope.violation = false;
                             scope.working = true;
+                            var target = scope.target ? '_blank' : '';
+
                             update({
                                 data: {
                                     context: 'update',
                                     id: ctrl.src.id,
                                     type: ctrl.src.type,
-                                    link: scope.link
+                                    link: scope.link,
+                                    linkTarget: target
                                 },
                                 success: onSuccess,
                                 error: onError
@@ -170,6 +174,7 @@
 
                             function onSuccess() {
                                 ctrl.src.link = scope.link;
+                                ctrl.src.linkTarget = target;
                                 editModeRenderer.close();
                             }
 
