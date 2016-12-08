@@ -2,6 +2,13 @@
     <div ng-switch-when="true" class="bin-block" ng-class="ctrl.src.cssClass">
         <bin-edit>
             <bin-edit-actions>
+                <li ng-if="ctrl.isLinkable()">
+                    <button type="button" class="bin-link" ng-click="ctrl.updateLink()">
+                        <span><i class="fa fa-link"></i></span>
+                        <span>Add link</span>
+                        <!--<span i18n code="blocks.link.item.button" read-only ng-bind="::var"></span>-->
+                    </button>
+                </li>
                 <li ng-if="ctrl.isRemoveItemAllowed()">
                     <button type="button" class="bin-link bin-link-danger"
                             ng-controller="RemoveItemFromCatalogController"

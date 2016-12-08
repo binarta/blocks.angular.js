@@ -2,13 +2,16 @@ describe('bin.blocks module', function () {
 
     beforeEach(module('bin.blocks'));
 
-    var $componentController, $timeout, search, searchArgs, topics;
+    var $componentController, $timeout, search, searchArgs, topics, editModeRenderer, updateCatalogItem;
 
-    beforeEach(inject(function (_$componentController_, _$timeout_, binartaSearch, topicRegistry) {
+    beforeEach(inject(function (_$componentController_, _$timeout_, binartaSearch, topicRegistry, _editModeRenderer_,
+                                _updateCatalogItem_) {
         $componentController = _$componentController_;
         $timeout = _$timeout_;
         search = binartaSearch;
         topics = topicRegistry;
+        editModeRenderer = _editModeRenderer_;
+        updateCatalogItem = _updateCatalogItem_;
 
         searchArgs = {
             action: 'search',
@@ -331,7 +334,7 @@ describe('bin.blocks module', function () {
         var ctrl, src, partition, blocksCtrl, blockRemovedSpy, editingSpy;
 
         beforeEach(function () {
-            src = {id: 1};
+            src = {id: 1, type: 'type', link: 'link'};
             partition = '/partition/';
             blockRemovedSpy = jasmine.createSpy('spy');
             editingSpy = jasmine.createSpy('spy').and.returnValue(true);
@@ -375,6 +378,10 @@ describe('bin.blocks module', function () {
                     expect(ctrl.isEditing()).toBeTruthy();
                 });
 
+                it('not linkable', function () {
+                    expect(ctrl.isLinkable()).toBeFalsy();
+                });
+
                 describe('on block removed', function () {
                     beforeEach(function () {
                         ctrl.blockRemoved();
@@ -384,8 +391,105 @@ describe('bin.blocks module', function () {
                         expect(blockRemovedSpy).toHaveBeenCalledWith(src);
                     });
                 });
+            });
+        });
 
+        describe('when block is linkable', function () {
+            beforeEach(function () {
+                ctrl = $componentController('binBlock', null, {src: src, linkable: 'true'});
+            });
 
+            describe('on init', function () {
+                beforeEach(function () {
+                    ctrl.blocksCtrl = blocksCtrl;
+                    ctrl.$onInit();
+                });
+
+                it('is linkable', function () {
+                    expect(ctrl.isLinkable()).toBeTruthy();
+                });
+
+                describe('on update link', function () {
+                    beforeEach(function () {
+                        ctrl.updateLink();
+                    });
+
+                    it('edit mode renderer is opened', function () {
+                        expect(editModeRenderer.open).toHaveBeenCalledWith({
+                            templateUrl: 'bin-blocks-edit-link.html',
+                            scope: jasmine.any(Object)
+                        });
+                    });
+
+                    describe('with renderer scope', function () {
+                        var scope;
+
+                        beforeEach(function () {
+                            scope = editModeRenderer.open.calls.mostRecent().args[0].scope;
+                        });
+
+                        it('previous link is available', function () {
+                            expect(scope.link).toEqual(src.link);
+                        });
+
+                        describe('on submit', function () {
+                            beforeEach(function () {
+                                scope.link = 'updated';
+                                scope.submit();
+                            });
+
+                            it('is working', function () {
+                                expect(scope.working).toBeTruthy();
+                            });
+
+                            it('item is updated', function () {
+                                expect(updateCatalogItem).toHaveBeenCalledWith({
+                                    data: {
+                                        context: 'update',
+                                        id: src.id,
+                                        type: src.type,
+                                        link: scope.link
+                                    },
+                                    success: jasmine.any(Function),
+                                    error: jasmine.any(Function)
+                                });
+                            });
+
+                            describe('on update success', function () {
+                                beforeEach(function () {
+                                    updateCatalogItem.calls.mostRecent().args[0].success();
+                                });
+
+                                it('renderer is closed', function () {
+                                    expect(editModeRenderer.close).toHaveBeenCalled();
+                                });
+
+                                it('src is updated with link', function () {
+                                    expect(src.link).toEqual(scope.link);
+                                });
+                            });
+
+                            describe('on update error', function () {
+                                beforeEach(function () {
+                                    updateCatalogItem.calls.mostRecent().args[0].error();
+                                });
+
+                                it('is not working', function () {
+                                    expect(scope.working).toBeFalsy();
+                                });
+
+                                it('show violation', function () {
+                                    expect(scope.violation).toEqual(true)
+                                });
+                            });
+                        });
+
+                        it('on cancel', function () {
+                            scope.cancel();
+                            expect(editModeRenderer.close).toHaveBeenCalled();
+                        });
+                    });
+                });
             });
         });
     });

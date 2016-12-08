@@ -1,5 +1,5 @@
 (function () {
-    angular.module('bin.blocks', ['binarta.search', 'notifications', 'bin.blocks.templates', 'bin.edit'])
+    angular.module('bin.blocks', ['bin.blocks.templates', 'catalog', 'binarta.search', 'notifications', 'toggle.edit.mode', 'bin.edit'])
         .component('binBlocks', new BlocksComponent())
         .component('binBlock', new BlockComponent());
 
@@ -33,10 +33,12 @@
             };
 
             ctrl.isAddNewItemAllowed = function () {
+                if (!ctrl.results) return false;
                 return !ctrl.max || ctrl.results.length < ctrl.max;
             };
 
             ctrl.isRemoveItemAllowed = function () {
+                if (!ctrl.results) return false;
                 return !ctrl.min || ctrl.results.length > ctrl.min;
             };
 
@@ -127,12 +129,13 @@
 
         this.bindings = {
             block: '=?',
-            src: '=?'
+            src: '=?',
+            linkable: '@'
         };
 
         this.controllerAs = 'ctrl';
 
-        this.controller = function () {
+        this.controller = ['$scope', 'editModeRenderer', 'updateCatalogItem', function ($scope, editModeRenderer, update) {
             var ctrl = this;
             ctrl.src = ctrl.src || ctrl.block;
 
@@ -141,10 +144,52 @@
                 ctrl.isEditing = ctrl.blocksCtrl.isEditing;
                 ctrl.isRemoveItemAllowed = ctrl.blocksCtrl.isRemoveItemAllowed;
 
+                ctrl.isLinkable = function () {
+                    return ctrl.linkable == 'true';
+                };
+
+                ctrl.updateLink = function () {
+                    if (ctrl.isLinkable()) {
+                        var scope = $scope.$new();
+                        scope.link = ctrl.src.link;
+                        scope.cancel = editModeRenderer.close;
+
+                        scope.submit = function () {
+                            scope.violation = false;
+                            scope.working = true;
+                            update({
+                                data: {
+                                    context: 'update',
+                                    id: ctrl.src.id,
+                                    type: ctrl.src.type,
+                                    link: scope.link
+                                },
+                                success: onSuccess,
+                                error: onError
+                            });
+
+                            function onSuccess() {
+                                ctrl.src.link = scope.link;
+                                editModeRenderer.close();
+                            }
+
+                            function onError() {
+                                scope.violation = true;
+                                scope.working = false;
+                            }
+                        };
+
+                        editModeRenderer.open({
+                            templateUrl: 'bin-blocks-edit-link.html',
+                            scope: scope
+                        });
+                    }
+                };
+
                 ctrl.blockRemoved = function () {
                     ctrl.blocksCtrl.blockRemoved(ctrl.src);
                 }
             }
-        }
+        }];
     }
 })();
