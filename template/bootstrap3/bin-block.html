@@ -1,4 +1,4 @@
-<div ng-switch="ctrl.edit && ctrl.active">
+<div ng-switch="ctrl.isEditing()">
     <div ng-switch-when="true" class="bin-block" ng-class="ctrl.src.cssClass">
         <bin-edit>
             <bin-edit-actions>

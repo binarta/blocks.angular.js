@@ -1,4 +1,4 @@
-<div ng-switch="ctrl.edit && ctrl.active">
+<div ng-switch="ctrl.isEditing()">
     <div ng-switch-when="true" class="bin-blocks">
         <div class="bin-blocks-actions" ng-controller="AddToCatalogController">
             <div class="row">

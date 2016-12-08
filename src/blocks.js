@@ -1,71 +1,109 @@
 (function () {
     angular.module('bin.blocks', ['binarta.search', 'notifications', 'bin.blocks.templates', 'bin.edit'])
-        .directive('binBlocks', ['$templateCache', '$timeout', 'ngRegisterTopicHandler', BinBlocksDirective])
+        .component('binBlocks', new BlocksComponent())
         .component('binBlock', new BlockComponent());
 
-    function BinBlocksDirective($templateCache, $timeout, topics) {
-        return {
-            restrict: 'E',
-            scope: {
-                partition: '@',
-                type: '@',
-                count: '@',
-                readOnly: '@'
-            },
-            controller: 'BinartaSearchController',
-            controllerAs: 'ctrl',
-            bindToController: true,
-            template: $templateCache.get('bin-blocks.html'),
-            link: function (scope) {
-                var delay = 300;
-                var ctrl = scope.ctrl;
-                var count = parseInt(ctrl.count || 100);
+    function BlocksComponent() {
+        this.templateUrl = 'bin-blocks.html';
 
-                ctrl.init({
+        this.bindings = {
+            partition: '@',
+            type: '@',
+            count: '@'
+        };
+
+        this.controllerAs = 'ctrl';
+
+        this.controller = ['$timeout', 'binartaSearch', 'topicRegistry', function ($timeout, search, topics) {
+            var ctrl = this;
+            var delay = 300;
+            var count = parseInt(ctrl.count || 100);
+            var offset = 0;
+            var editing = false;
+            var searchForMoreLock;
+            ctrl.templateUrl = 'partials/blocks' + ctrl.partition + 'blocks.html';
+            executeSearch();
+
+            ctrl.searchForMore = function () {
+                if (searchForMoreLock) return;
+                offset += count;
+                executeSearch();
+            };
+
+            ctrl.blockRemoved = function (block) {
+                block.cssClass = 'removed';
+                $timeout(function () {
+                    ctrl.results.splice(ctrl.results.indexOf(block), 1);
+                }, delay);
+            };
+
+            ctrl.addBlock = function (args) {
+                args.item.defaultName = 'block';
+                args.submit();
+            };
+
+            ctrl.blockAdded = function (block) {
+                block.cssClass = 'added';
+                $timeout(function () {
+                    delete block.cssClass;
+                }, delay);
+                ctrl.results.unshift(block);
+            };
+
+            ctrl.isEditing = function () {
+                return editing;
+            };
+
+            topics.subscribe('edit.mode', editModeListener);
+
+            ctrl.$onDestroy = function () {
+                topics.unsubscribe('edit.mode', editModeListener);
+            };
+
+            function editModeListener(editModeActive) {
+                editing = editModeActive;
+            }
+
+            function executeSearch() {
+                searchForMoreLock = true;
+
+                search({
+                    action: 'search',
                     entity: 'catalog-item',
-                    context: 'search',
                     filters: {
                         type: ctrl.type || 'uiBlocks',
                         partition: ctrl.partition
                     },
-                    sortings: [
-                        {on: 'priority', orientation: 'desc'}
-                    ],
-                    subset: {count: count},
-                    autosearch: true,
-                    noMoreResultsNotification: false
+                    sortings: [{
+                        on: 'priority',
+                        orientation: 'desc'
+                    }],
+                    subset: {
+                        count: count,
+                        offset: offset
+                    },
+                    success: onSearchSuccess
                 });
-
-                ctrl.templateUrl = 'partials/blocks' + ctrl.partition + 'blocks.html';
-
-                ctrl.active = ctrl.readOnly == undefined;
-
-                topics(scope, 'edit.mode', function (editModeActive) {
-                    ctrl.edit = editModeActive;
-                });
-
-                ctrl.blockRemoved = function (block) {
-                    block.cssClass = 'removed';
-                    $timeout(function () {
-                        ctrl.results.splice(ctrl.results.indexOf(block), 1);
-                    }, delay);
-                };
-
-                ctrl.addBlock = function (args) {
-                    args.item.defaultName = 'block';
-                    args.submit();
-                };
-
-                ctrl.blockAdded = function (block) {
-                    block.cssClass = 'added';
-                    ctrl.subset.offset++;
-                    $timeout(function () {
-                        delete block.cssClass;
-                    }, delay);
-                    ctrl.results.unshift(block);
-                };
             }
-        }
+
+            function onSearchSuccess(results) {
+                if (!ctrl.results) ctrl.results = [];
+                pushNewResults(results);
+                if (results.length == count) searchForMoreLock = false;
+            }
+
+            function pushNewResults(results) {
+                results.forEach(pushNewItemIfUnique);
+            }
+
+            function pushNewItemIfUnique(item) {
+                var isUnique = true;
+                ctrl.results.forEach(function (r) {
+                    if (r.id == item.id) isUnique = false;
+                });
+                if (isUnique) ctrl.results.push(item);
+            }
+        }];
     }
 
     function BlockComponent() {
@@ -84,19 +122,17 @@
 
         this.controller = function () {
             var ctrl = this;
+            ctrl.src = ctrl.src || ctrl.block;
 
-            this.src = this.src || this.block;
-            this.templateUrl = 'partials/blocks' +  this.src.partition + 'block.html';
+            ctrl.$onInit = function () {
+                ctrl.templateUrl = 'partials/blocks' +  ctrl.blocksCtrl.partition + 'block.html';
 
-            this.$onInit = function () {
-                this.edit = this.blocksCtrl.edit;
-                this.active = this.blocksCtrl.active;
+                ctrl.isEditing = ctrl.blocksCtrl.isEditing;
 
-                this.blockRemoved = function () {
+                ctrl.blockRemoved = function () {
                     ctrl.blocksCtrl.blockRemoved(ctrl.src);
                 }
             }
-
         }
     }
 })();
