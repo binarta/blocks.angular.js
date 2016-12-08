@@ -60,6 +60,14 @@ describe('bin.blocks module', function () {
                     expect(ctrl.results).toEqual(results);
                 });
 
+                it('is allowed to add more items', function () {
+                    expect(ctrl.isAddNewItemAllowed()).toBeTruthy();
+                });
+
+                it('is allowed to remove an item', function () {
+                    expect(ctrl.isRemoveItemAllowed()).toBeTruthy();
+                });
+
                 describe('on search for more', function () {
                     beforeEach(function () {
                         ctrl.searchForMore();
@@ -242,6 +250,54 @@ describe('bin.blocks module', function () {
             });
         });
 
+        describe('with max', function () {
+            beforeEach(function () {
+                searchArgs.filters.type = type;
+                searchArgs.filters.partition = partition;
+                searchArgs.subset.count = 1;
+                searchArgs.subset.offset = 0;
+                ctrl = $componentController('binBlocks', null, {partition: partition, type: type, count: 1, max: 1});
+                search.calls.mostRecent().args[0].success(results);
+            });
+
+            it('not allowed to add more items', function () {
+                expect(ctrl.isAddNewItemAllowed()).toBeFalsy();
+            });
+
+            describe('on add block', function () {
+                var block = {id: 'add'};
+                var submitSpy;
+
+                beforeEach(function () {
+                    submitSpy = jasmine.createSpy('spy');
+
+                    ctrl.addBlock({
+                        item: block,
+                        submit: submitSpy
+                    });
+                });
+
+                it('submit handler is called', function () {
+                    expect(submitSpy).not.toHaveBeenCalled();
+                });
+            });
+        });
+
+        describe('with min', function () {
+            beforeEach(function () {
+                searchArgs.filters.type = type;
+                searchArgs.filters.partition = partition;
+                searchArgs.subset.count = 1;
+                searchArgs.subset.offset = 0;
+                ctrl = $componentController('binBlocks', null, {partition: partition, type: type, count: 1, min: 1});
+                search.calls.mostRecent().args[0].success(results);
+            });
+
+            it('not allowed to remove an item', function () {
+                expect(ctrl.isRemoveItemAllowed()).toBeFalsy();
+            });
+        });
+
         describe('with partition and type', function () {
             beforeEach(function () {
                 searchArgs.filters.type = type;
@@ -328,6 +384,8 @@ describe('bin.blocks module', function () {
                         expect(blockRemovedSpy).toHaveBeenCalledWith(src);
                     });
                 });
+
+
             });
         });
     });

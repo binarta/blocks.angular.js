@@ -2,7 +2,7 @@
     <div ng-switch-when="true" class="bin-block" ng-class="ctrl.src.cssClass">
         <bin-edit>
             <bin-edit-actions>
-                <li>
+                <li ng-if="ctrl.isRemoveItemAllowed()">
                     <button type="button" class="bin-link bin-link-danger"
                             ng-controller="RemoveItemFromCatalogController"
                             ng-init="init({noredirect: true, successNotification: false, success: ctrl.blockRemoved})"

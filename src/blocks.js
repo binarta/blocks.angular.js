@@ -9,7 +9,9 @@
         this.bindings = {
             partition: '@',
             type: '@',
-            count: '@'
+            count: '@',
+            max: '@',
+            min: '@'
         };
 
         this.controllerAs = 'ctrl';
@@ -30,6 +32,14 @@
                 executeSearch();
             };
 
+            ctrl.isAddNewItemAllowed = function () {
+                return !ctrl.max || ctrl.results.length < ctrl.max;
+            };
+
+            ctrl.isRemoveItemAllowed = function () {
+                return !ctrl.min || ctrl.results.length > ctrl.min;
+            };
+
             ctrl.blockRemoved = function (block) {
                 block.cssClass = 'removed';
                 $timeout(function () {
@@ -38,8 +48,10 @@
             };
 
             ctrl.addBlock = function (args) {
-                args.item.defaultName = 'block';
-                args.submit();
+                if (ctrl.isAddNewItemAllowed()) {
+                    args.item.defaultName = 'block';
+                    args.submit();
+                }
             };
 
             ctrl.blockAdded = function (block) {
@@ -126,8 +138,8 @@
 
             ctrl.$onInit = function () {
                 ctrl.templateUrl = 'partials/blocks' +  ctrl.blocksCtrl.partition + 'block.html';
-
                 ctrl.isEditing = ctrl.blocksCtrl.isEditing;
+                ctrl.isRemoveItemAllowed = ctrl.blocksCtrl.isRemoveItemAllowed;
 
                 ctrl.blockRemoved = function () {
                     ctrl.blocksCtrl.blockRemoved(ctrl.src);
