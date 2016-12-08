@@ -1,7 +1,7 @@
 (function () {
     angular.module('bin.blocks', ['binarta.search', 'notifications', 'bin.blocks.templates', 'bin.edit'])
         .directive('binBlocks', ['$templateCache', '$timeout', 'ngRegisterTopicHandler', BinBlocksDirective])
-        .directive('binBlock', ['$templateCache', BinBlockDirective]);
+        .component('binBlock', new BlockComponent());
 
     function BinBlocksDirective($templateCache, $timeout, topics) {
         return {
@@ -68,30 +68,35 @@
         }
     }
 
-    function BinBlockDirective($templateCache) {
-        return {
-            restrict: 'E',
-            require: '^^binBlocks',
-            scope: {
-                block: '=?',
-                src: '=?'
-            },
-            controller: function () {
-                this.src = this.src || this.block;
-                this.templateUrl = 'partials/blocks' +  this.src.partition + 'block.html';
-            },
-            controllerAs: 'ctrl',
-            bindToController: true,
-            template: $templateCache.get('bin-block.html'),
-            link: function (scope, element, attrs, blocksCtrl) {
-                var ctrl = scope.ctrl;
-                ctrl.edit = blocksCtrl.edit;
-                ctrl.active = blocksCtrl.active;
+    function BlockComponent() {
+        this.templateUrl = 'bin-block.html';
 
-                ctrl.blockRemoved = function () {
-                    blocksCtrl.blockRemoved(ctrl.src);
+        this.require = {
+            blocksCtrl: '^^binBlocks'
+        };
+
+        this.bindings = {
+            block: '=?',
+            src: '=?'
+        };
+
+        this.controllerAs = 'ctrl';
+
+        this.controller = function () {
+            var ctrl = this;
+
+            this.src = this.src || this.block;
+            this.templateUrl = 'partials/blocks' +  this.src.partition + 'block.html';
+
+            this.$onInit = function () {
+                this.edit = this.blocksCtrl.edit;
+                this.active = this.blocksCtrl.active;
+
+                this.blockRemoved = function () {
+                    ctrl.blocksCtrl.blockRemoved(ctrl.src);
                 }
             }
+
         }
     }
 })();
