@@ -140,7 +140,7 @@
             ctrl.src = ctrl.src || ctrl.block;
 
             ctrl.$onInit = function () {
-                ctrl.templateUrl = 'partials/blocks' +  ctrl.blocksCtrl.partition + 'block.html';
+                ctrl.templateUrl = 'partials/blocks' + ctrl.blocksCtrl.partition + 'block.html';
                 ctrl.isEditing = ctrl.blocksCtrl.isEditing;
                 ctrl.isRemoveItemAllowed = ctrl.blocksCtrl.isRemoveItemAllowed;
 
@@ -149,46 +149,45 @@
                 };
 
                 ctrl.updateLink = function () {
-                    if (ctrl.isLinkable()) {
-                        var scope = $scope.$new();
-                        scope.link = ctrl.src.link;
-                        scope.target = ctrl.src.linkTarget == '_blank';
-                        scope.cancel = editModeRenderer.close;
+                    if (!ctrl.isLinkable()) return;
+                    var scope = $scope.$new();
+                    scope.link = ctrl.src.link;
+                    scope.target = ctrl.src.linkTarget == '_blank';
+                    scope.cancel = editModeRenderer.close;
 
-                        scope.submit = function () {
-                            scope.violation = false;
-                            scope.working = true;
-                            var target = scope.target ? '_blank' : '';
+                    scope.submit = function () {
+                        scope.violation = false;
+                        scope.working = true;
+                        var target = scope.target ? '_blank' : '';
 
-                            update({
-                                data: {
-                                    context: 'update',
-                                    id: ctrl.src.id,
-                                    type: ctrl.src.type,
-                                    link: scope.link,
-                                    linkTarget: target
-                                },
-                                success: onSuccess,
-                                error: onError
-                            });
-
-                            function onSuccess() {
-                                ctrl.src.link = scope.link;
-                                ctrl.src.linkTarget = target;
-                                editModeRenderer.close();
-                            }
-
-                            function onError() {
-                                scope.violation = true;
-                                scope.working = false;
-                            }
-                        };
-
-                        editModeRenderer.open({
-                            templateUrl: 'bin-blocks-edit-link.html',
-                            scope: scope
+                        update({
+                            data: {
+                                context: 'update',
+                                id: ctrl.src.id,
+                                type: ctrl.src.type,
+                                link: scope.link,
+                                linkTarget: target
+                            },
+                            success: onSuccess,
+                            error: onError
                         });
-                    }
+
+                        function onSuccess() {
+                            ctrl.src.link = scope.link;
+                            ctrl.src.linkTarget = target;
+                            editModeRenderer.close();
+                        }
+
+                        function onError() {
+                            scope.violation = true;
+                            scope.working = false;
+                        }
+                    };
+
+                    editModeRenderer.open({
+                        templateUrl: 'bin-blocks-edit-link.html',
+                        scope: scope
+                    });
                 };
 
                 ctrl.blockRemoved = function () {
