@@ -4,25 +4,29 @@
       "blocks.remove.item.button": "verwijderen",
       "blocks.add.item.button": "nieuw item",
       "blocks.add.item.upperbound": "Het maximale aantal items is bereikt",
-      "blocks.link.label": "Vul in geldige link in:"
+      "blocks.link.button": "link",
+      "blocks.link.label": "Vul in geldige url in:"
     },
     "en": {
       "blocks.remove.item.button": "delete",
       "blocks.add.item.button": "add item",
       "blocks.add.item.upperbound": "The maximum number of items has been reached",
-      "blocks.link.label": "Enter a valid link:"
+      "blocks.link.button": "link",
+      "blocks.link.label": "Enter a valid url:"
     },
     "fr": {
       "blocks.remove.item.button": "effacer",
       "blocks.add.item.button": "add item",
       "blocks.add.item.upperbound": "The maximum number of items has been reached",
-      "blocks.link.label": "Enter a valid link:"
+      "blocks.link.button": "link",
+      "blocks.link.label": "Enter a valid url:"
     },
     "de": {
       "blocks.remove.item.button": "delete",
       "blocks.add.item.button": "add item",
       "blocks.add.item.upperbound": "The maximum number of items has been reached",
-      "blocks.link.label": "Enter a valid link:"
+      "blocks.link.button": "link",
+      "blocks.link.label": "Enter a valid url:"
     }
   }
 }

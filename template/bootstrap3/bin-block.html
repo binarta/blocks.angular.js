@@ -5,8 +5,7 @@
                 <li ng-if="ctrl.isLinkable()">
                     <button type="button" class="bin-link" ng-click="ctrl.updateLink()">
                         <span><i class="fa fa-link"></i></span>
-                        <span>Add link</span>
-                        <!--<span i18n code="blocks.link.item.button" read-only ng-bind="::var"></span>-->
+                        <span i18n code="blocks.link.button" read-only ng-bind="::var"></span>
                     </button>
                 </li>
                 <li ng-if="ctrl.isRemoveItemAllowed()">
