@@ -135,7 +135,7 @@
 
         this.controllerAs = 'ctrl';
 
-        this.controller = ['$scope', 'editModeRenderer', 'updateCatalogItem', function ($scope, editModeRenderer, update) {
+        this.controller = ['$scope', 'editModeRenderer', 'updateCatalogItem', function ($scope, editModeRenderer, updater) {
             var ctrl = this;
             ctrl.src = ctrl.src || ctrl.block;
 
@@ -146,6 +146,16 @@
 
                 ctrl.isLinkable = function () {
                     return ctrl.linkable == 'true';
+                };
+
+                ctrl.update = function (request, response) {
+                    var data = {
+                        context: 'update',
+                        id: ctrl.src.id,
+                        type: ctrl.src.type
+                    };
+                    data[request.key] = request.value;
+                    update(data, response);
                 };
 
                 ctrl.updateLink = function () {
@@ -161,13 +171,12 @@
                         var target = scope.target ? '_blank' : '';
 
                         update({
-                            data: {
-                                context: 'update',
-                                id: ctrl.src.id,
-                                type: ctrl.src.type,
-                                link: scope.link,
-                                linkTarget: target
-                            },
+                            context: 'update',
+                            id: ctrl.src.id,
+                            type: ctrl.src.type,
+                            link: scope.link,
+                            linkTarget: target
+                        }, {
                             success: onSuccess,
                             error: onError
                         });
@@ -192,6 +201,10 @@
 
                 ctrl.blockRemoved = function () {
                     ctrl.blocksCtrl.blockRemoved(ctrl.src);
+                };
+
+                function update(request, response) {
+                    updater({data: request, success: response.success, error: response.error, successNotification: false});
                 }
             }
         }];

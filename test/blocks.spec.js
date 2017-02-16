@@ -331,7 +331,7 @@ describe('bin.blocks module', function () {
     });
 
     describe('binBlock component', function () {
-        var ctrl, src, partition, blocksCtrl, blockRemovedSpy, editingSpy;
+        var $ctrl, src, partition, blocksCtrl, blockRemovedSpy, editingSpy;
 
         beforeEach(function () {
             src = {id: 1, type: 'type', link: 'link', linkTarget: '_blank'};
@@ -347,44 +347,44 @@ describe('bin.blocks module', function () {
 
         describe('when block is given', function () {
             beforeEach(function () {
-                ctrl = $componentController('binBlock', null, {block: src});
+                $ctrl = $componentController('binBlock', null, {block: src});
             });
 
             it('src is available', function () {
-                expect(ctrl.src).toEqual(src);
+                expect($ctrl.src).toEqual(src);
             });
         });
 
         describe('when src is given', function () {
             beforeEach(function () {
-                ctrl = $componentController('binBlock', null, {src: src});
+                $ctrl = $componentController('binBlock', null, {src: src});
             });
 
             it('src is available', function () {
-                expect(ctrl.src).toEqual(src);
+                expect($ctrl.src).toEqual(src);
             });
 
             describe('on init', function () {
                 beforeEach(function () {
-                    ctrl.blocksCtrl = blocksCtrl;
-                    ctrl.$onInit();
+                    $ctrl.blocksCtrl = blocksCtrl;
+                    $ctrl.$onInit();
                 });
 
                 it('templateUrl is available', function () {
-                    expect(ctrl.templateUrl).toEqual('partials/blocks' + partition + 'block.html');
+                    expect($ctrl.templateUrl).toEqual('partials/blocks' + partition + 'block.html');
                 });
 
                 it('edit is passed through', function () {
-                    expect(ctrl.isEditing()).toBeTruthy();
+                    expect($ctrl.isEditing()).toBeTruthy();
                 });
 
                 it('not linkable', function () {
-                    expect(ctrl.isLinkable()).toBeFalsy();
+                    expect($ctrl.isLinkable()).toBeFalsy();
                 });
 
                 describe('on block removed', function () {
                     beforeEach(function () {
-                        ctrl.blockRemoved();
+                        $ctrl.blockRemoved();
                     });
 
                     it('block removed on parent is called', function () {
@@ -396,22 +396,22 @@ describe('bin.blocks module', function () {
 
         describe('when block is linkable', function () {
             beforeEach(function () {
-                ctrl = $componentController('binBlock', null, {src: src, linkable: 'true'});
+                $ctrl = $componentController('binBlock', null, {src: src, linkable: 'true'});
             });
 
             describe('on init', function () {
                 beforeEach(function () {
-                    ctrl.blocksCtrl = blocksCtrl;
-                    ctrl.$onInit();
+                    $ctrl.blocksCtrl = blocksCtrl;
+                    $ctrl.$onInit();
                 });
 
                 it('is linkable', function () {
-                    expect(ctrl.isLinkable()).toBeTruthy();
+                    expect($ctrl.isLinkable()).toBeTruthy();
                 });
 
                 describe('on update link', function () {
                     beforeEach(function () {
-                        ctrl.updateLink();
+                        $ctrl.updateLink();
                     });
 
                     it('edit mode renderer is opened', function () {
@@ -453,7 +453,8 @@ describe('bin.blocks module', function () {
                                         linkTarget: '_blank'
                                     },
                                     success: jasmine.any(Function),
-                                    error: jasmine.any(Function)
+                                    error: jasmine.any(Function),
+                                    successNotification: false
                                 });
                             });
 
@@ -502,7 +503,8 @@ describe('bin.blocks module', function () {
                                             linkTarget: ''
                                         },
                                         success: jasmine.any(Function),
-                                        error: jasmine.any(Function)
+                                        error: jasmine.any(Function),
+                                        successNotification: false
                                     });
                                 });
 
@@ -524,6 +526,33 @@ describe('bin.blocks module', function () {
                             expect(editModeRenderer.close).toHaveBeenCalled();
                         });
                     });
+                });
+            });
+        });
+
+        describe('exposes update function', function () {
+            var successSpy, errorSpy;
+
+            beforeEach(function () {
+                successSpy = jasmine.createSpy('success');
+                errorSpy = jasmine.createSpy('error');
+                $ctrl = $componentController('binBlock', null, {src: src});
+                $ctrl.blocksCtrl = blocksCtrl;
+                $ctrl.$onInit();
+                $ctrl.update({key: 'customKey', value: 'customValue'}, {success: successSpy, error: errorSpy});
+            });
+
+            it('item is updated', function () {
+                expect(updateCatalogItem).toHaveBeenCalledWith({
+                    data: {
+                        context: 'update',
+                        id: src.id,
+                        type: src.type,
+                        customKey: 'customValue'
+                    },
+                    success: successSpy,
+                    error: errorSpy,
+                    successNotification: false
                 });
             });
         });
