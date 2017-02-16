@@ -2,23 +2,24 @@
     <div ng-switch-when="true" class="bin-block" ng-class="ctrl.src.cssClass">
         <bin-edit>
             <bin-edit-actions>
-                <li ng-if="ctrl.isLinkable()">
-                    <button type="button" class="bin-link" ng-click="ctrl.updateLink()">
-                        <span><i class="fa fa-link"></i></span>
-                        <span i18n code="blocks.link.button" read-only ng-bind="::var"></span>
-                    </button>
-                </li>
-                <li ng-if="ctrl.isRemoveItemAllowed()">
-                    <button type="button" class="bin-link bin-link-danger"
-                            ng-controller="RemoveItemFromCatalogController"
-                            ng-init="init({noredirect: true, successNotification: false, success: ctrl.blockRemoved})"
-                            ng-click="submit(ctrl.src.id)"
-                            ng-disabled="working">
+                <bin-edit-action action="ctrl.updateLink()" ng-if="ctrl.isLinkable()">
+                    <span><i class="fa fa-link"></i></span>
+                    <span i18n code="blocks.link.button" read-only ng-bind="::var"></span>
+                </bin-edit-action>
+                <bin-edit-actions-selector for="delete" danger ng-if="ctrl.isRemoveItemAllowed()">
+                    <span><i class="fa fa-trash-o"></i></span>
+                    <span i18n code="blocks.remove.item.button" read-only ng-bind="::var"></span>
+                </bin-edit-actions-selector>
+            </bin-edit-actions>
+            <bin-edit-actions for="delete" button-i18n-code="blocks.remove.item.confirm">
+                <div ng-controller="RemoveItemFromCatalogController"
+                     ng-init="init({noredirect: true, successNotification: false, success: ctrl.blockRemoved})">
+                    <bin-edit-action action="submit(ctrl.src.id)" danger>
                         <span ng-hide="working"><i class="fa fa-trash-o"></i></span>
                         <span ng-show="working"><i class="fa fa-spinner fa-spin"></i></span>
                         <span i18n code="blocks.remove.item.button" read-only ng-bind="::var"></span>
-                    </button>
-                </li>
+                    </bin-edit-action>
+                </div>
             </bin-edit-actions>
             <bin-edit-body>
                 <div ng-include="ctrl.templateUrl"></div>
