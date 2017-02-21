@@ -27,11 +27,12 @@ describe('bin.blocks module', function () {
     }));
 
     describe('binBlocks component', function () {
-        var ctrl, partition, type, results;
+        var ctrl, partition, type, typeFallback, results;
 
         beforeEach(function () {
             partition = '/partition/';
             type = 'type';
+            typeFallback = 'uiBlocks';
             results = [
                 {id: 1}
             ]
@@ -44,6 +45,7 @@ describe('bin.blocks module', function () {
                 searchArgs.subset.count = 1;
                 searchArgs.subset.offset = 0;
                 ctrl = $componentController('binBlocks', null, {partition: partition, type: type, count: 1});
+                ctrl.$onInit();
             });
 
             it('templateUrl is available', function () {
@@ -253,6 +255,21 @@ describe('bin.blocks module', function () {
             });
         });
 
+        describe('when type is not given', function () {
+            beforeEach(function () {
+                searchArgs.filters.type = typeFallback;
+                searchArgs.filters.partition = partition;
+                searchArgs.subset.count = 1;
+                searchArgs.subset.offset = 0;
+                ctrl = $componentController('binBlocks', null, {partition: partition, count: 1});
+                ctrl.$onInit();
+            });
+
+            it('search is executed', function () {
+                expect(search).toHaveBeenCalledWith(searchArgs);
+            });
+        });
+
         describe('with max', function () {
             beforeEach(function () {
                 searchArgs.filters.type = type;
@@ -260,6 +277,7 @@ describe('bin.blocks module', function () {
                 searchArgs.subset.count = 1;
                 searchArgs.subset.offset = 0;
                 ctrl = $componentController('binBlocks', null, {partition: partition, type: type, count: 1, max: 1});
+                ctrl.$onInit();
                 search.calls.mostRecent().args[0].success(results);
             });
 
@@ -293,6 +311,7 @@ describe('bin.blocks module', function () {
                 searchArgs.subset.count = 1;
                 searchArgs.subset.offset = 0;
                 ctrl = $componentController('binBlocks', null, {partition: partition, type: type, count: 1, min: 1});
+                ctrl.$onInit();
                 search.calls.mostRecent().args[0].success(results);
             });
 
@@ -308,6 +327,7 @@ describe('bin.blocks module', function () {
                 searchArgs.subset.count = 100;
                 searchArgs.subset.offset = 0;
                 ctrl = $componentController('binBlocks', null, {partition: partition, type: type});
+                ctrl.$onInit();
             });
 
             it('search is executed', function () {
@@ -322,6 +342,7 @@ describe('bin.blocks module', function () {
                 searchArgs.subset.count = 100;
                 searchArgs.subset.offset = 0;
                 ctrl = $componentController('binBlocks', null, {partition: partition});
+                ctrl.$onInit();
             });
 
             it('search is executed', function () {

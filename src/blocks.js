@@ -24,7 +24,11 @@
             var editing = false;
             var searchForMoreLock;
             ctrl.templateUrl = 'partials/blocks' + ctrl.partition + 'blocks.html';
-            executeSearch();
+
+            this.$onInit = function () {
+                this.type = this.type || 'uiBlocks';
+                executeSearch();
+            };
 
             ctrl.searchForMore = function () {
                 if (searchForMoreLock) return;
@@ -85,7 +89,7 @@
                     action: 'search',
                     entity: 'catalog-item',
                     filters: {
-                        type: ctrl.type || 'uiBlocks',
+                        type: ctrl.type,
                         partition: ctrl.partition
                     },
                     sortings: [{
