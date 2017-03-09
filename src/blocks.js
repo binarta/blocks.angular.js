@@ -1,5 +1,5 @@
 (function () {
-    angular.module('bin.blocks', ['bin.blocks.templates', 'catalog', 'binarta.search', 'notifications', 'toggle.edit.mode', 'bin.edit'])
+    angular.module('bin.blocks', ['bin.blocks.templates', 'angularx', 'catalog', 'binarta.search', 'notifications', 'toggle.edit.mode', 'bin.edit'])
         .component('binBlocks', new BlocksComponent())
         .component('binBlock', new BlockComponent());
 
@@ -139,7 +139,7 @@
 
         this.controllerAs = 'ctrl';
 
-        this.controller = ['$scope', 'editModeRenderer', 'updateCatalogItem', function ($scope, editModeRenderer, updater) {
+        this.controller = ['$scope', '$location', '$filter', 'editModeRenderer', 'updateCatalogItem', function ($scope, $location, $filter, editModeRenderer, updater) {
             var ctrl = this;
             ctrl.src = ctrl.src || ctrl.block;
 
@@ -165,7 +165,7 @@
                 ctrl.updateLink = function () {
                     if (!ctrl.isLinkable()) return;
                     var scope = $scope.$new();
-                    scope.link = ctrl.src.link;
+                    scope.link = ctrl.src.link || 'http://';
                     scope.target = ctrl.src.linkTarget == '_blank';
                     scope.cancel = editModeRenderer.close;
 
@@ -173,6 +173,7 @@
                         scope.violation = false;
                         scope.working = true;
                         var target = scope.target ? '_blank' : '';
+                        scope.link = $filter('binSanitizeUrl')(scope.link);
 
                         update({
                             context: 'update',

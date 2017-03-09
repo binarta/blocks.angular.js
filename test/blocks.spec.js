@@ -352,19 +352,20 @@ describe('bin.blocks module', function () {
     });
 
     describe('binBlock component', function () {
-        var $ctrl, src, partition, blocksCtrl, blockRemovedSpy, editingSpy;
+        var $ctrl, src, partition, blocksCtrl, blockRemovedSpy, editingSpy, sanitizeUrlSpy;
 
-        beforeEach(function () {
-            src = {id: 1, type: 'type', link: 'link', linkTarget: '_blank'};
+        beforeEach(inject(function (binSanitizeUrlFilter) {
+            src = {id: 1, type: 'type'};
             partition = '/partition/';
             blockRemovedSpy = jasmine.createSpy('spy');
             editingSpy = jasmine.createSpy('spy').and.returnValue(true);
+            sanitizeUrlSpy = binSanitizeUrlFilter;
             blocksCtrl = {
                 partition: partition,
                 blockRemoved: blockRemovedSpy,
                 isEditing: editingSpy
             };
-        });
+        }));
 
         describe('when block is given', function () {
             beforeEach(function () {
@@ -416,12 +417,9 @@ describe('bin.blocks module', function () {
         });
 
         describe('when block is linkable', function () {
-            beforeEach(function () {
-                $ctrl = $componentController('binBlock', null, {src: src, linkable: 'true'});
-            });
-
-            describe('on init', function () {
+            describe('and add a link for the first time', function () {
                 beforeEach(function () {
+                    $ctrl = $componentController('binBlock', null, {src: src, linkable: 'true'});
                     $ctrl.blocksCtrl = blocksCtrl;
                     $ctrl.$onInit();
                 });
@@ -449,19 +447,25 @@ describe('bin.blocks module', function () {
                             scope = editModeRenderer.open.calls.mostRecent().args[0].scope;
                         });
 
-                        it('previous link is available', function () {
-                            expect(scope.link).toEqual(src.link);
-                            expect(scope.target).toEqual(true);
+                        it('default link data is set', function () {
+                            expect(scope.link).toEqual('http://');
+                            expect(scope.target).toBeFalsy();
                         });
 
                         describe('on submit', function () {
                             beforeEach(function () {
-                                scope.link = 'updated';
+                                scope.link = 'http://updated';
+                                scope.target = true;
+                                sanitizeUrlSpy.and.returnValue(scope.link);
                                 scope.submit();
                             });
 
                             it('is working', function () {
                                 expect(scope.working).toBeTruthy();
+                            });
+
+                            it('link is sanitized', function () {
+                                expect(sanitizeUrlSpy).toHaveBeenCalledWith(scope.link);
                             });
 
                             it('item is updated', function () {
@@ -545,6 +549,46 @@ describe('bin.blocks module', function () {
                         it('on cancel', function () {
                             scope.cancel();
                             expect(editModeRenderer.close).toHaveBeenCalled();
+                        });
+                    });
+                });
+            });
+
+            describe('and with previous link', function () {
+                beforeEach(function () {
+                    src.link = 'link';
+                    src.linkTarget = '_blank';
+                    $ctrl = $componentController('binBlock', null, {src: src, linkable: 'true'});
+                    $ctrl.blocksCtrl = blocksCtrl;
+                    $ctrl.$onInit();
+                });
+
+                it('is linkable', function () {
+                    expect($ctrl.isLinkable()).toBeTruthy();
+                });
+
+                describe('on update link', function () {
+                    beforeEach(function () {
+                        $ctrl.updateLink();
+                    });
+
+                    it('edit mode renderer is opened', function () {
+                        expect(editModeRenderer.open).toHaveBeenCalledWith({
+                            templateUrl: 'bin-blocks-edit-link.html',
+                            scope: jasmine.any(Object)
+                        });
+                    });
+
+                    describe('with renderer scope', function () {
+                        var scope;
+
+                        beforeEach(function () {
+                            scope = editModeRenderer.open.calls.mostRecent().args[0].scope;
+                        });
+
+                        it('previous link is available', function () {
+                            expect(scope.link).toEqual(src.link);
+                            expect(scope.target).toEqual(true);
                         });
                     });
                 });
