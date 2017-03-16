@@ -1,14 +1,12 @@
 {
   "name": "binarta.blocks.angular",
   "main": [
-    "./src/blocks.js",
-    "./src/blocks-tpls-bootstrap3.js",
-    "./less/blocks.less",
-    "./metadata-system.json",
-    "./sources.json"
+    "./src/blocks.js"
   ],
   "dependencies": {
     "binarta.angularx": "0.*.*",
+    "binarta.config.angular": "0.*.*",
+    "binarta.rest.client.angular": "0.*.*",
     "binarta.catalog.angular": "2.*.*",
     "binarta.search.angular": "0.*.*",
     "binarta.notifications.angular": "1.*.*",

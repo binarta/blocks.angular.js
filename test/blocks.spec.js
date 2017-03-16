@@ -2,16 +2,21 @@ describe('bin.blocks module', function () {
 
     beforeEach(module('bin.blocks'));
 
-    var $componentController, $timeout, search, searchArgs, topics, editModeRenderer, updateCatalogItem;
+    var $rootScope, $componentController, $timeout, search, searchArgs, topics, editModeRenderer, updateCatalogItem,
+        rest, restDeferred;
 
-    beforeEach(inject(function (_$componentController_, _$timeout_, binartaSearch, topicRegistry, _editModeRenderer_,
-                                _updateCatalogItem_) {
+    beforeEach(inject(function ($q, _$rootScope_, _$componentController_, _$timeout_, binartaSearch, topicRegistry,
+                                _editModeRenderer_, _updateCatalogItem_, restServiceHandler) {
+        $rootScope = _$rootScope_;
         $componentController = _$componentController_;
         $timeout = _$timeout_;
         search = binartaSearch;
         topics = topicRegistry;
         editModeRenderer = _editModeRenderer_;
         updateCatalogItem = _updateCatalogItem_;
+        rest = restServiceHandler;
+        restDeferred = $q.defer();
+        rest.and.returnValue(restDeferred.promise);
 
         searchArgs = {
             action: 'search',
@@ -403,14 +408,78 @@ describe('bin.blocks module', function () {
                 it('not linkable', function () {
                     expect($ctrl.isLinkable()).toBeFalsy();
                 });
+            });
+        });
 
-                describe('on block removed', function () {
+        describe('when block is not removable', function () {
+            beforeEach(function () {
+                blocksCtrl.isRemoveItemAllowed = function () {
+                    return false;
+                };
+                $ctrl = $componentController('binBlock', null, {src: src});
+                $ctrl.blocksCtrl = blocksCtrl;
+                $ctrl.$onInit();
+            });
+
+            describe('and calling delete', function () {
+                beforeEach(function () {
+                    $ctrl.remove();
+                });
+
+                it('do nothing', function () {
+                    expect($ctrl.working).toBeFalsy();
+                    expect(rest).not.toHaveBeenCalled();
+                });
+            });
+        });
+
+        describe('when block is removable', function () {
+            beforeEach(function () {
+                blocksCtrl.isRemoveItemAllowed = function () {
+                    return true;
+                };
+                src.id = 'test item';
+                $ctrl = $componentController('binBlock', null, {src: src});
+                $ctrl.blocksCtrl = blocksCtrl;
+                $ctrl.$onInit();
+            });
+
+            describe('and calling delete', function () {
+                beforeEach(function () {
+                    $ctrl.remove();
+                });
+
+                it('is working', function () {
+                    expect($ctrl.working).toBeTruthy();
+                });
+
+                it('item is deleted', function () {
+                    expect(rest).toHaveBeenCalledWith({
+                        params: {
+                            method: 'DELETE',
+                            withCredentials: true,
+                            url: 'baseUri/api/entity/catalog-item?id=test%20item'
+                        }
+                    });
+                });
+
+                describe('on delete success', function () {
                     beforeEach(function () {
-                        $ctrl.blockRemoved();
+                        restDeferred.resolve();
+                        $rootScope.$digest();
                     });
 
                     it('block removed on parent is called', function () {
                         expect(blockRemovedSpy).toHaveBeenCalledWith(src);
+                    });
+
+                    it('not working', function () {
+                        expect($ctrl.working).toBeFalsy();
+                    });
+
+                    it('and calling delete again, do nothing', function () {
+                        $ctrl.remove();
+                        expect($ctrl.working).toBeFalsy();
                     });
                 });
             });

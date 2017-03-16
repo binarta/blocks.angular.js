@@ -12,14 +12,11 @@
                 </bin-edit-actions-selector>
             </bin-edit-actions>
             <bin-edit-actions for="delete" button-i18n-code="blocks.remove.item.confirm">
-                <div ng-controller="RemoveItemFromCatalogController"
-                     ng-init="init({noredirect: true, successNotification: false, success: ctrl.blockRemoved})">
-                    <bin-edit-action action="submit(ctrl.src.id)" danger>
-                        <span ng-hide="working"><i class="fa fa-trash-o"></i></span>
-                        <span ng-show="working"><i class="fa fa-spinner fa-spin"></i></span>
-                        <span i18n code="blocks.remove.item.button" read-only ng-bind="::var"></span>
-                    </bin-edit-action>
-                </div>
+                <bin-edit-action action="ctrl.remove()" disabled="working" danger>
+                    <span ng-hide="ctrl.working"><i class="fa fa-trash-o"></i></span>
+                    <span ng-show="ctrl.working"><i class="fa fa-spinner fa-spin"></i></span>
+                    <span i18n code="blocks.remove.item.button" read-only ng-bind="::var"></span>
+                </bin-edit-action>
             </bin-edit-actions>
             <bin-edit-body>
                 <div ng-include="ctrl.templateUrl"></div>

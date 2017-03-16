@@ -1,5 +1,5 @@
 (function () {
-    angular.module('bin.blocks', ['bin.blocks.templates', 'angularx', 'catalog', 'binarta.search', 'notifications', 'toggle.edit.mode', 'bin.edit'])
+    angular.module('bin.blocks', ['config', 'bin.blocks.templates', 'angularx', 'catalog', 'binarta.search', 'notifications', 'toggle.edit.mode', 'bin.edit', 'rest.client'])
         .component('binBlocks', new BlocksComponent())
         .component('binBlock', new BlockComponent());
 
@@ -139,8 +139,8 @@
 
         this.controllerAs = 'ctrl';
 
-        this.controller = ['$scope', '$location', '$filter', 'editModeRenderer', 'updateCatalogItem', function ($scope, $location, $filter, editModeRenderer, updater) {
-            var ctrl = this;
+        this.controller = ['$scope', '$location', '$filter', 'config', 'editModeRenderer', 'updateCatalogItem', 'restServiceHandler', function ($scope, $location, $filter, config, editModeRenderer, updater, rest) {
+            var ctrl = this, isRemoved;
             ctrl.src = ctrl.src || ctrl.block;
 
             ctrl.$onInit = function () {
@@ -160,6 +160,23 @@
                     };
                     data[request.key] = request.value;
                     update(data, response);
+                };
+
+                ctrl.remove = function () {
+                    if (!ctrl.isRemoveItemAllowed() || isRemoved) return;
+                    ctrl.working = true;
+                    return rest({
+                        params: {
+                            method: 'DELETE',
+                            withCredentials: true,
+                            url: (config.baseUri || '') + 'api/entity/catalog-item?id=' + encodeURIComponent(ctrl.src.id)
+                        }
+                    }).then(function () {
+                        isRemoved = true;
+                        ctrl.blocksCtrl.blockRemoved(ctrl.src);
+                    }).finally(function () {
+                        ctrl.working = false;
+                    });
                 };
 
                 ctrl.updateLink = function () {
@@ -202,10 +219,6 @@
                         templateUrl: 'bin-blocks-edit-link.html',
                         scope: scope
                     });
-                };
-
-                ctrl.blockRemoved = function () {
-                    ctrl.blocksCtrl.blockRemoved(ctrl.src);
                 };
 
                 function update(request, response) {
