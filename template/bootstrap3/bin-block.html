@@ -1,6 +1,6 @@
 <div ng-switch="ctrl.isEditing()">
     <div ng-switch-when="true" class="bin-block" ng-class="ctrl.src.cssClass">
-        <bin-edit>
+        <bin-edit is-editable="ctrl.isLinkable() || ctrl.isRemoveItemAllowed()">
             <bin-edit-actions>
                 <bin-edit-action action="ctrl.updateLink()" ng-if="ctrl.isLinkable()">
                     <span><i class="fa fa-link"></i></span>
