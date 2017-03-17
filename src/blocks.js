@@ -159,7 +159,12 @@
                         type: ctrl.src.type
                     };
                     data[request.key] = request.value;
-                    update(data, response);
+                    update(data, {success: onSuccess, error: response.error});
+
+                    function onSuccess() {
+                        ctrl.src[request.key] = request.value;
+                        response.success();
+                    }
                 };
 
                 ctrl.remove = function () {

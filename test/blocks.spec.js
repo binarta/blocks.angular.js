@@ -2,8 +2,8 @@ describe('bin.blocks module', function () {
 
     beforeEach(module('bin.blocks'));
 
-    var $rootScope, $componentController, $timeout, search, searchArgs, topics, editModeRenderer, updateCatalogItem,
-        rest, restDeferred;
+    var $rootScope, $componentController, $timeout, search, searchArgs, topics, editModeRenderer,
+        updateCatalogItem, rest, restDeferred;
 
     beforeEach(inject(function ($q, _$rootScope_, _$componentController_, _$timeout_, binartaSearch, topicRegistry,
                                 _editModeRenderer_, _updateCatalogItem_, restServiceHandler) {
@@ -684,9 +684,23 @@ describe('bin.blocks module', function () {
                         type: src.type,
                         customKey: 'customValue'
                     },
-                    success: successSpy,
+                    success: jasmine.any(Function),
                     error: errorSpy,
                     successNotification: false
+                });
+            });
+
+            describe('on success', function () {
+                beforeEach(function () {
+                    updateCatalogItem.calls.mostRecent().args[0].success();
+                });
+
+                it('value on src is updated', function () {
+                    expect($ctrl.src['customKey']).toEqual('customValue');
+                });
+
+                it('success handler is executed', function () {
+                    expect(successSpy).toHaveBeenCalled();
                 });
             });
         });
