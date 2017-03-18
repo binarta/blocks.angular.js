@@ -11,11 +11,11 @@
                     <span i18n code="blocks.remove.item.button" read-only ng-bind="::var"></span>
                 </bin-edit-actions-selector>
             </bin-edit-actions>
-            <bin-edit-actions for="delete" button-i18n-code="blocks.remove.item.confirm">
+            <bin-edit-actions for="delete">
                 <bin-edit-action action="ctrl.remove()" disabled="working" danger>
                     <span ng-hide="ctrl.working"><i class="fa fa-trash-o"></i></span>
                     <span ng-show="ctrl.working"><i class="fa fa-spinner fa-spin"></i></span>
-                    <span i18n code="blocks.remove.item.button" read-only ng-bind="::var"></span>
+                    <span i18n code="blocks.remove.item.confirm" read-only ng-bind="::var"></span>
                 </bin-edit-action>
             </bin-edit-actions>
             <bin-edit-body>
