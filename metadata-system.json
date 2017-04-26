@@ -18,11 +18,11 @@
     },
     "fr": {
       "blocks.remove.item.button": "effacer",
-      "blocks.remove.item.confirm": "delete item?",
-      "blocks.add.item.button": "add item",
-      "blocks.add.item.upperbound": "The maximum number of items has been reached",
-      "blocks.link.button": "link",
-      "blocks.link.label": "Enter a valid url:"
+      "blocks.remove.item.confirm": "effacer l'article?",
+      "blocks.add.item.button": "ajouter l'article",
+      "blocks.add.item.upperbound": "Le nombre maximum d'articles a été atteint",
+      "blocks.link.button": "lien",
+      "blocks.link.label": "Entrez une url valide:"
     },
     "de": {
       "blocks.remove.item.button": "delete",
