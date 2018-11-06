@@ -1,23 +1,36 @@
 <div ng-switch="ctrl.isEditing()">
     <div ng-switch-when="true" class="bin-block" ng-class="ctrl.src.cssClass">
         <bin-edit is-editable="ctrl.isLinkable() || ctrl.isRemoveItemAllowed()">
-            <bin-edit-actions>
-                <bin-edit-action action="ctrl.updateLink()" ng-if="ctrl.isLinkable()">
-                    <span><i class="fa fa-link"></i></span>
-                    <span i18n code="blocks.link.button" read-only ng-bind="::var"></span>
-                </bin-edit-action>
-                <bin-edit-actions-selector for="delete" danger ng-if="ctrl.isRemoveItemAllowed()">
-                    <span><i class="fa fa-trash-o"></i></span>
-                    <span i18n code="blocks.remove.item.button" read-only ng-bind="::var"></span>
-                </bin-edit-actions-selector>
-            </bin-edit-actions>
-            <bin-edit-actions for="delete">
-                <bin-edit-action action="ctrl.remove()" disabled="working" danger>
-                    <span ng-hide="ctrl.working"><i class="fa fa-trash-o"></i></span>
-                    <span ng-show="ctrl.working"><i class="fa fa-spinner fa-spin"></i></span>
-                    <span i18n code="blocks.remove.item.confirm" read-only ng-bind="::var"></span>
-                </bin-edit-action>
-            </bin-edit-actions>
+            <bin-actions>
+                <bin-action-group>
+                    <bin-action
+                            bin-action-type="expression"
+                            bin-action-expression="ctrl.updateLink()"
+                            ng-if="ctrl.isLinkable()">
+                        <span><i class="fa fa-link"></i></span>
+                        <span i18n code="blocks.link.button" read-only ng-bind="::var"></span>
+                    </bin-action>
+                    <bin-action
+                            bin-action-type="selector"
+                            bin-action-selector="delete"
+                            bin-action-danger
+                            ng-if="ctrl.isRemoveItemAllowed()">
+                        <span><i class="fa fa-trash-o"></i></span>
+                        <span i18n code="blocks.remove.item.button" read-only ng-bind="::var"></span>
+                    </bin-action>
+                </bin-action-group>
+                <bin-action-group for="delete">
+                    <bin-action
+                            bin-action-type="expression"
+                            bin-action-expression="ctrl.remove()"
+                            bin-action-disabled="working"
+                            bin-action-danger>
+                        <span ng-hide="ctrl.working"><i class="fa fa-trash-o"></i></span>
+                        <span ng-show="ctrl.working"><i class="fa fa-spinner fa-spin"></i></span>
+                        <span i18n code="blocks.remove.item.confirm" read-only ng-bind="::var"></span>
+                    </bin-action>
+                </bin-action-group>
+            </bin-actions>
             <bin-edit-body>
                 <div ng-include="ctrl.templateUrl"></div>
             </bin-edit-body>
